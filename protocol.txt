@@ -1,0 +1,18 @@
+CONNECT
+<port>
+
+INITIALIZE
+<id>
+<bottomId>
+<topId>
+16 (
+<id>
+<port>)
+
+LOOKUP
+<file_name>
+* ( <file_content> )
+
+UPLOAD
+<file_name>
+* ( <file_content> )
