@@ -1,8 +1,8 @@
 
-package dht;
+package bead.dht;
 
-import dht.Crc16;
-import dht.Node;
+import bead.dht.Crc16;
+import bead.dht.Node;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,34 +25,45 @@ BufferedWriter forwardedOutput = null;
 // lookup port
 int lookupPort(int crc) {
   int result = 0;
+  boolean find = false;
   
-  if ((instance.bottomId <= crc) && (crc <= instance.topId)) {
-    result = instance.port;
-  } else if ((instance.id < crc) && (crc <= instance.fingers[0][0])) {
-	result = instance.fingers[0][1];
+  if (instance.bottomId < instance.topId) {
+    if ((instance.bottomId <= crc) && (crc <= instance.topId)) {
+	  result = instance.port;
+	  find = true;
+	}
   } else {
-    boolean find = false;
-	
-	int i = 0;
-	while ((find == false) && (i < (instance.fingers.length - 1))) {
-	  if (instance.fingers[i][0] < instance.fingers[i + 1][0]) {
-	    if ((instance.fingers[i][0] <= crc) && (crc < instance.fingers[i + 1][0])) {
-	      result = instance.fingers[i][1];
-		  find = true;
+    if ((instance.bottomId <= crc) || (crc <= instance.topId)) {
+	  result = instance.port;
+	  find = true;
+	}
+  }
+  
+  if (find == false) {
+    if ((instance.id < crc) && (crc <= instance.fingers[0][0])) {
+	  result = instance.fingers[0][1];
+	} else {
+      int i = 0;
+	  while ((find == false) && (i < (instance.fingers.length - 1))) {
+	    if (instance.fingers[i][0] < instance.fingers[i + 1][0]) {
+		  if ((instance.fingers[i][0] <= crc) && (crc < instance.fingers[i + 1][0])) {
+		    result = instance.fingers[i][1];
+		    find = true;
+		  }
+	    } else {
+		  if ((instance.fingers[i][0] <= crc) || (crc < instance.fingers[i + 1][0])) {
+		    result = instance.fingers[i][1];
+		    find = true;
+		  }
 	    }
-	  } else {
-	    if ((instance.fingers[i][0] <= crc) || (crc < instance.fingers[i + 1][0])) {
-	      result = instance.fingers[i][1];
-		  find = true;
-	    }
+
+	    i = i + 1;
 	  }
-	
-	  i = i + 1;
-	}
-	
-	if (find == false) {
-	  result = instance.fingers[instance.fingers.length - 1][1];
-	}
+
+	  if (find == false) {
+	    result = instance.fingers[instance.fingers.length - 1][1];
+	  }
+    }
   }
   
   return (result);
